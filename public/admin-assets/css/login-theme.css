@@ -1,0 +1,178 @@
+/**
+ * Clean Centered ERP Login Stylesheet
+ * Focused, authentic single-card layout
+ */
+
+:root {
+    --auth-bg: #f8fafc;
+    --auth-card-bg: #ffffff;
+    --auth-card-border: #e2e8f0;
+    --auth-text: #0f172a;
+    --auth-muted: #64748b;
+    --auth-input-bg: #ffffff;
+    --auth-input-border: #cbd5e1;
+    --auth-input-focus-border: #4f46e5;
+    --auth-input-focus-ring: rgba(79, 70, 229, 0.12);
+}
+
+[data-bs-theme="dark"] {
+    --auth-bg: #090d16;
+    --auth-card-bg: #111827;
+    --auth-card-border: #1f2937;
+    --auth-text: #f8fafc;
+    --auth-muted: #94a3b8;
+    --auth-input-bg: #0f172a;
+    --auth-input-border: #334155;
+    --auth-input-focus-border: #6366f1;
+    --auth-input-focus-ring: rgba(99, 102, 241, 0.2);
+}
+
+/* Page Viewport */
+.login-viewport {
+    min-height: 100vh;
+    width: 100%;
+    background-color: var(--auth-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.25rem;
+    position: relative;
+    transition: background-color 0.25s ease;
+}
+
+/* Top Right Corner Theme Switcher */
+.theme-corner-btn {
+    position: absolute;
+    top: 1.5rem;
+    right: 1.5rem;
+}
+
+/* Centered Auth Card */
+.auth-card-clean {
+    width: 100%;
+    max-width: 440px;
+    background-color: var(--auth-card-bg);
+    border: 1px solid var(--auth-card-border);
+    border-radius: 16px;
+    padding: 2.5rem 2.25rem;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+}
+
+[data-bs-theme="dark"] .auth-card-clean {
+    box-shadow: 0 20px 35px -10px rgba(0, 0, 0, 0.5);
+}
+
+/* Brand Header */
+.brand-logo-badge {
+    width: 44px;
+    height: 44px;
+    border-radius: 11px;
+    background: linear-gradient(135deg, #4f46e5, #0ea5e9);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    font-size: 1.35rem;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+}
+
+.brand-logo-text {
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--auth-text);
+    margin: 0;
+}
+
+/* Form Elements */
+.form-label-human {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--auth-text);
+    margin-bottom: 0.4rem;
+}
+
+.input-group-human {
+    position: relative;
+    margin-bottom: 1.25rem;
+}
+
+.input-human {
+    height: 46px;
+    background-color: var(--auth-input-bg);
+    border: 1px solid var(--auth-input-border);
+    border-radius: 10px;
+    color: var(--auth-text);
+    font-size: 0.92rem;
+    padding: 0.65rem 0.95rem 0.65rem 2.6rem;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.input-human:focus {
+    background-color: var(--auth-input-bg);
+    border-color: var(--auth-input-focus-border);
+    box-shadow: 0 0 0 3px var(--auth-input-focus-ring);
+    color: var(--auth-text);
+    outline: none;
+}
+
+.input-lead-icon {
+    position: absolute;
+    left: 13px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--auth-muted);
+    font-size: 1rem;
+    pointer-events: none;
+}
+
+.password-eye-btn {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--auth-muted);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 6px;
+}
+
+.password-eye-btn:hover {
+    color: var(--auth-text);
+}
+
+/* Primary Action Button */
+.btn-submit-human {
+    width: 100%;
+    height: 46px;
+    border-radius: 10px;
+    background-color: #4f46e5;
+    border: 1px solid #4f46e5;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-submit-human:hover {
+    background-color: #4338ca;
+    border-color: #4338ca;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+}
+
+.login-footer-copy {
+    margin-top: 1.5rem;
+    font-size: 0.8rem;
+    color: var(--auth-muted);
+    text-align: center;
+}
