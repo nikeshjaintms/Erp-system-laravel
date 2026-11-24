@@ -871,3 +871,66 @@ body.sidebar-collapsed .admin-main {
         display: none;
     }
 }
+
+/* =========================================
+   ERP Pagination Styling
+   ========================================= */
+.pagination {
+    margin-bottom: 0;
+    gap: 0.35rem;
+    align-items: center;
+}
+
+.pagination .page-item .page-link {
+    border-radius: 8px !important;
+    border: 1px solid var(--erp-border-color);
+    background-color: var(--erp-card-bg);
+    color: var(--erp-text-color);
+    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    height: 36px;
+    line-height: 1;
+}
+
+.pagination .page-item .page-link:hover {
+    background-color: var(--erp-hover-bg);
+    border-color: var(--erp-border-color);
+    color: var(--erp-primary);
+}
+
+.pagination .page-item.active .page-link {
+    background-color: var(--erp-primary) !important;
+    border-color: var(--erp-primary) !important;
+    color: #ffffff !important;
+    box-shadow: 0 2px 4px rgba(79, 70, 229, 0.3);
+}
+
+.pagination .page-item.disabled .page-link {
+    background-color: transparent;
+    border-color: var(--erp-border-color);
+    color: var(--erp-muted-color);
+    opacity: 0.5;
+}
+
+/* Guard against raw SVG sizing in any pagination output */
+nav[role="navigation"] svg,
+.pagination svg,
+.page-link svg {
+    width: 14px !important;
+    height: 14px !important;
+    max-width: 14px !important;
+    max-height: 14px !important;
+    display: inline-block !important;
+    vertical-align: middle !important;
+}
+
+nav[role="navigation"] .flex.justify-between.flex-1 {
+    display: none;
+}
+

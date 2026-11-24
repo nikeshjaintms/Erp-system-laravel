@@ -109,11 +109,28 @@
         });
     }
 
+    // Auto-configure table dropdowns to use fixed positioning and prevent container clipping / scrollbars
+    function initTableDropdowns() {
+        document.addEventListener('show.bs.dropdown', function (event) {
+            const toggle = event.target;
+            if (toggle && toggle.closest('.table-responsive, .table-erp')) {
+                const dropdown = typeof bootstrap !== 'undefined' ? bootstrap.Dropdown.getOrCreateInstance(toggle) : null;
+                if (dropdown) {
+                    dropdown._config.boundary = 'viewport';
+                    dropdown._config.popperConfig = Object.assign({}, dropdown._config.popperConfig, {
+                        strategy: 'fixed'
+                    });
+                }
+            }
+        });
+    }
+
     // DOM Ready
     document.addEventListener('DOMContentLoaded', function () {
         initTheme();
         initSidebar();
         initBootstrapComponents();
         initSearchShortcut();
+        initTableDropdowns();
     });
 })();
