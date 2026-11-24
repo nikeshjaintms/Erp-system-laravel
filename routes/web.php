@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Admin\ItemController;
+use App\Http\Controllers\Admin\StockController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -17,8 +20,20 @@ Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->nam
 // Admin Panel Routes using Custom Bootstrap Theme
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminController::class, 'dashboard'])->name('dashboard');
+
+    Route::get('/users', [UserController::class, 'index'])->name('users');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard.alias');
     Route::get('/inventory', [AdminController::class, 'inventory'])->name('inventory');
+
+    // Stock & Inventory Module Routes
+    Route::resource('items', ItemController::class);
+    Route::get('stock', [StockController::class, 'index'])->name('stock.index');
+    Route::get('stock/{item}/history', [StockController::class, 'history'])->name('stock.history');
+    Route::get('stock/{item}/adjust', [StockController::class, 'adjust'])->name('stock.adjust.form');
+    Route::post('stock/{item}/adjust', [StockController::class, 'storeAdjustment'])->name('stock.adjust.store');
     Route::get('/orders', [AdminController::class, 'orders'])->name('orders');
     Route::get('/orders/{orderNo?}/download-pdf', [AdminController::class, 'downloadInvoice'])->name('orders.pdf.download');
     Route::get('/orders/{orderNo?}/stream-pdf', [AdminController::class, 'streamInvoice'])->name('orders.pdf.stream');

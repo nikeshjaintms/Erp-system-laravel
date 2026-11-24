@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ItemService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -17,26 +19,26 @@ class AdminController extends Controller
                 'value' => '$148,920.00',
                 'change' => '+14.6%',
                 'trend' => 'up',
-                'subtext' => 'vs last month ($129,950)'
+                'subtext' => 'vs last month ($129,950)',
             ],
             'orders' => [
                 'value' => '1,428',
                 'change' => '+8.4%',
                 'trend' => 'up',
-                'subtext' => '94 orders today'
+                'subtext' => '94 orders today',
             ],
             'inventory_value' => [
                 'value' => '$582,310.00',
                 'change' => '-2.1%',
                 'trend' => 'down',
-                'subtext' => 'Across 4 regional warehouses'
+                'subtext' => 'Across 4 regional warehouses',
             ],
             'pending_shipments' => [
                 'value' => '38',
                 'change' => 'High',
                 'trend' => 'up',
-                'subtext' => '12 dispatching today'
-            ]
+                'subtext' => '12 dispatching today',
+            ],
         ];
 
         // Recent Orders list
@@ -49,7 +51,7 @@ class AdminController extends Controller
                 'total' => '$14,250.00',
                 'payment_status' => 'Paid',
                 'order_status' => 'Delivered',
-                'date' => 'Today, 10:24 AM'
+                'date' => 'Today, 10:24 AM',
             ],
             [
                 'id' => 'ORD-9820',
@@ -59,7 +61,7 @@ class AdminController extends Controller
                 'total' => '$8,720.50',
                 'payment_status' => 'Paid',
                 'order_status' => 'In Transit',
-                'date' => 'Today, 09:12 AM'
+                'date' => 'Today, 09:12 AM',
             ],
             [
                 'id' => 'ORD-9819',
@@ -69,7 +71,7 @@ class AdminController extends Controller
                 'total' => '$29,480.00',
                 'payment_status' => 'Pending',
                 'order_status' => 'Processing',
-                'date' => 'Yesterday'
+                'date' => 'Yesterday',
             ],
             [
                 'id' => 'ORD-9818',
@@ -79,7 +81,7 @@ class AdminController extends Controller
                 'total' => '$3,190.00',
                 'payment_status' => 'Paid',
                 'order_status' => 'Delivered',
-                'date' => 'Yesterday'
+                'date' => 'Yesterday',
             ],
             [
                 'id' => 'ORD-9817',
@@ -89,7 +91,7 @@ class AdminController extends Controller
                 'total' => '$18,340.00',
                 'payment_status' => 'Failed',
                 'order_status' => 'On Hold',
-                'date' => '2 days ago'
+                'date' => '2 days ago',
             ],
         ];
 
@@ -105,86 +107,16 @@ class AdminController extends Controller
     }
 
     /**
-     * Display the ERP Inventory Management page.
+     * Display the ERP Inventory Management page with real database inventory.
      */
-    public function inventory()
+    public function inventory(Request $request, ItemService $itemService)
     {
-        $products = [
-            [
-                'id' => 1,
-                'sku' => 'PRD-HD-101',
-                'name' => 'Heavy Duty Industrial Bearing',
-                'category' => 'Mechanical Parts',
-                'warehouse' => 'Main Warehouse (WH-A)',
-                'stock' => 142,
-                'reorder_level' => 30,
-                'cost_price' => '$45.00',
-                'unit_price' => '$89.00',
-                'status' => 'In Stock'
-            ],
-            [
-                'id' => 2,
-                'sku' => 'PRD-EL-204',
-                'name' => 'High-Precision Stepper Motor',
-                'category' => 'Electronics & Motors',
-                'warehouse' => 'East Coast Hub (WH-B)',
-                'stock' => 24,
-                'reorder_level' => 20,
-                'cost_price' => '$110.00',
-                'unit_price' => '$185.00',
-                'status' => 'Low Stock'
-            ],
-            [
-                'id' => 3,
-                'sku' => 'PRD-HY-305',
-                'name' => 'High-Torque Hydraulic Pump',
-                'category' => 'Hydraulics',
-                'warehouse' => 'South Depot (WH-C)',
-                'stock' => 4,
-                'reorder_level' => 20,
-                'cost_price' => '$420.00',
-                'unit_price' => '$680.00',
-                'status' => 'Critical'
-            ],
-            [
-                'id' => 4,
-                'sku' => 'PRD-PN-408',
-                'name' => 'Pneumatic Actuator Valve 2"',
-                'category' => 'Pneumatics',
-                'warehouse' => 'Main Warehouse (WH-A)',
-                'stock' => 0,
-                'reorder_level' => 15,
-                'cost_price' => '$75.00',
-                'unit_price' => '$130.00',
-                'status' => 'Out of Stock'
-            ],
-            [
-                'id' => 5,
-                'sku' => 'PRD-ST-512',
-                'name' => 'Reinforced Stainless Steel Coupling',
-                'category' => 'Hardware & Fasteners',
-                'warehouse' => 'West Logistics (WH-D)',
-                'stock' => 380,
-                'reorder_level' => 50,
-                'cost_price' => '$12.50',
-                'unit_price' => '$26.00',
-                'status' => 'In Stock'
-            ],
-            [
-                'id' => 6,
-                'sku' => 'PRD-SN-620',
-                'name' => 'Infrared Industrial Sensor Kit',
-                'category' => 'Sensors & Automation',
-                'warehouse' => 'East Coast Hub (WH-B)',
-                'stock' => 88,
-                'reorder_level' => 25,
-                'cost_price' => '$65.00',
-                'unit_price' => '$120.00',
-                'status' => 'In Stock'
-            ]
-        ];
+        $filters = $request->only(['search', 'category', 'status', 'sort_by', 'sort_direction']);
+        $items = $itemService->getPaginatedItems($filters, 15);
+        $metrics = $itemService->getInventoryMetrics();
+        $categories = ['Mechanical Parts', 'Electronics & Motors', 'Hydraulics', 'Pneumatics', 'Hardware & Fasteners', 'Sensors & Automation'];
 
-        return view('admin.inventory.index', compact('products'));
+        return view('admin.stock.index', compact('items', 'metrics', 'categories', 'filters'));
     }
 
     /**
@@ -202,7 +134,7 @@ class AdminController extends Controller
                 'tax' => '$1,282.50',
                 'payment' => 'Paid',
                 'status' => 'Delivered',
-                'sales_rep' => 'Alex Turner'
+                'sales_rep' => 'Alex Turner',
             ],
             [
                 'order_no' => 'SO-2026-0041',
@@ -213,7 +145,7 @@ class AdminController extends Controller
                 'tax' => '$784.85',
                 'payment' => 'Paid',
                 'status' => 'In Transit',
-                'sales_rep' => 'David Miller'
+                'sales_rep' => 'David Miller',
             ],
             [
                 'order_no' => 'SO-2026-0040',
@@ -224,7 +156,7 @@ class AdminController extends Controller
                 'tax' => '$2,653.20',
                 'payment' => 'Pending',
                 'status' => 'Processing',
-                'sales_rep' => 'Elena Rostova'
+                'sales_rep' => 'Elena Rostova',
             ],
             [
                 'order_no' => 'SO-2026-0039',
@@ -235,7 +167,7 @@ class AdminController extends Controller
                 'tax' => '$287.10',
                 'payment' => 'Paid',
                 'status' => 'Delivered',
-                'sales_rep' => 'Alex Turner'
+                'sales_rep' => 'Alex Turner',
             ],
             [
                 'order_no' => 'SO-2026-0038',
@@ -246,8 +178,8 @@ class AdminController extends Controller
                 'tax' => '$1,650.60',
                 'payment' => 'Overdue',
                 'status' => 'On Hold',
-                'sales_rep' => 'Marcus Vance'
-            ]
+                'sales_rep' => 'Marcus Vance',
+            ],
         ];
 
         return view('admin.orders.index', compact('orders'));
@@ -269,7 +201,7 @@ class AdminController extends Controller
                 'credit_limit' => '$100,000.00',
                 'balance' => '$14,250.00',
                 'orders_count' => 42,
-                'status' => 'Active'
+                'status' => 'Active',
             ],
             [
                 'code' => 'CUST-742',
@@ -281,7 +213,7 @@ class AdminController extends Controller
                 'credit_limit' => '$75,000.00',
                 'balance' => '$8,720.50',
                 'orders_count' => 29,
-                'status' => 'Active'
+                'status' => 'Active',
             ],
             [
                 'code' => 'CUST-619',
@@ -293,7 +225,7 @@ class AdminController extends Controller
                 'credit_limit' => '$150,000.00',
                 'balance' => '$29,480.00',
                 'orders_count' => 64,
-                'status' => 'Active'
+                'status' => 'Active',
             ],
             [
                 'code' => 'CUST-403',
@@ -305,7 +237,7 @@ class AdminController extends Controller
                 'credit_limit' => '$50,000.00',
                 'balance' => '$0.00',
                 'orders_count' => 15,
-                'status' => 'Active'
+                'status' => 'Active',
             ],
             [
                 'code' => 'CUST-912',
@@ -317,8 +249,8 @@ class AdminController extends Controller
                 'credit_limit' => '$80,000.00',
                 'balance' => '$18,340.00',
                 'orders_count' => 11,
-                'status' => 'Credit Hold'
-            ]
+                'status' => 'Credit Hold',
+            ],
         ];
 
         return view('admin.customers.index', compact('customers'));
@@ -346,7 +278,7 @@ class AdminController extends Controller
             'tax' => '$1,282.50',
             'payment' => 'Paid',
             'status' => 'Delivered',
-            'sales_rep' => 'Alex Turner'
+            'sales_rep' => 'Alex Turner',
         ];
 
         if (function_exists('activity')) {
@@ -355,7 +287,8 @@ class AdminController extends Controller
                 ->log("Downloaded Tax Invoice PDF for order {$orderNo}");
         }
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.pdf.invoice', compact('order'));
+        $pdf = Pdf::loadView('admin.pdf.invoice', compact('order'));
+
         return $pdf->download("invoice-{$orderNo}.pdf");
     }
 
@@ -373,10 +306,11 @@ class AdminController extends Controller
             'tax' => '$1,282.50',
             'payment' => 'Paid',
             'status' => 'Delivered',
-            'sales_rep' => 'Alex Turner'
+            'sales_rep' => 'Alex Turner',
         ];
 
-        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.pdf.invoice', compact('order'));
+        $pdf = Pdf::loadView('admin.pdf.invoice', compact('order'));
+
         return $pdf->stream("invoice-{$orderNo}.pdf");
     }
 
@@ -395,7 +329,7 @@ class AdminController extends Controller
                 'description' => 'Downloaded Commercial Tax Invoice PDF for #SO-2026-0042',
                 'subject' => 'Invoice #SO-2026-0042',
                 'event' => 'download',
-                'ip' => '127.0.0.1'
+                'ip' => '127.0.0.1',
             ],
             [
                 'created_at' => '2026-10-17 11:45:10',
@@ -406,7 +340,7 @@ class AdminController extends Controller
                 'description' => 'Updated inventory stock threshold for SKU-0941',
                 'subject' => 'Product: SKU-0941',
                 'event' => 'updated',
-                'ip' => '127.0.0.1'
+                'ip' => '127.0.0.1',
             ],
             [
                 'created_at' => '2026-10-17 10:24:00',
@@ -417,7 +351,7 @@ class AdminController extends Controller
                 'description' => 'Created Sales Order #SO-2026-0042 for Acme Industrial Corp',
                 'subject' => 'Sales Order: SO-2026-0042',
                 'event' => 'created',
-                'ip' => '192.168.1.45'
+                'ip' => '192.168.1.45',
             ],
             [
                 'created_at' => '2026-10-17 09:00:15',
@@ -428,8 +362,8 @@ class AdminController extends Controller
                 'description' => 'Admin user authenticated successfully via ERP portal',
                 'subject' => 'Auth: Session #882',
                 'event' => 'login',
-                'ip' => '127.0.0.1'
-            ]
+                'ip' => '127.0.0.1',
+            ],
         ];
 
         return view('admin.activity-log.index', compact('activities'));
@@ -445,26 +379,26 @@ class AdminController extends Controller
                 'name' => 'Super Admin',
                 'description' => 'Full administrative access across all ERP departments and system configs.',
                 'permissions' => ['view-dashboard', 'manage-inventory', 'manage-orders', 'manage-customers', 'manage-settings', 'view-activity-log', 'manage-roles-permissions'],
-                'users_count' => 1
+                'users_count' => 1,
             ],
             [
                 'name' => 'Warehouse Manager',
                 'description' => 'Manage multi-facility stock adjustments, safety thresholds, and packing slips.',
                 'permissions' => ['view-dashboard', 'manage-inventory', 'manage-orders'],
-                'users_count' => 3
+                'users_count' => 3,
             ],
             [
                 'name' => 'Sales Executive',
                 'description' => 'Create commercial quotations, client orders, and view customer records.',
                 'permissions' => ['view-dashboard', 'manage-orders', 'manage-customers'],
-                'users_count' => 5
+                'users_count' => 5,
             ],
             [
                 'name' => 'Accountant',
                 'description' => 'Process customer payments, tax deductions, and download invoice PDFs.',
                 'permissions' => ['view-dashboard', 'manage-orders', 'view-activity-log'],
-                'users_count' => 2
-            ]
+                'users_count' => 2,
+            ],
         ];
 
         $permissionMatrix = [
@@ -472,44 +406,44 @@ class AdminController extends Controller
                 'name' => 'view-dashboard',
                 'description' => 'Access real-time KPI metrics and executive overview graphs',
                 'module' => 'Dashboard',
-                'roles' => ['Super Admin', 'Warehouse Manager', 'Sales Executive', 'Accountant']
+                'roles' => ['Super Admin', 'Warehouse Manager', 'Sales Executive', 'Accountant'],
             ],
             [
                 'name' => 'manage-inventory',
                 'description' => 'Create SKUs, adjust quantities, transfer stock between hubs',
                 'module' => 'Inventory',
-                'roles' => ['Super Admin', 'Warehouse Manager']
+                'roles' => ['Super Admin', 'Warehouse Manager'],
             ],
             [
                 'name' => 'manage-orders',
                 'description' => 'Book sales orders, dispatch shipments, generate invoices',
                 'module' => 'Sales & Orders',
-                'roles' => ['Super Admin', 'Warehouse Manager', 'Sales Executive', 'Accountant']
+                'roles' => ['Super Admin', 'Warehouse Manager', 'Sales Executive', 'Accountant'],
             ],
             [
                 'name' => 'manage-customers',
                 'description' => 'Register clients, set credit limits, view balance ledgers',
                 'module' => 'CRM',
-                'roles' => ['Super Admin', 'Sales Executive']
+                'roles' => ['Super Admin', 'Sales Executive'],
             ],
             [
                 'name' => 'manage-settings',
                 'description' => 'Configure legal entity, tax rates, SMTP, and daily backups',
                 'module' => 'System',
-                'roles' => ['Super Admin']
+                'roles' => ['Super Admin'],
             ],
             [
                 'name' => 'view-activity-log',
                 'description' => 'Inspect comprehensive audit trail records and login sessions',
                 'module' => 'Security & Audit',
-                'roles' => ['Super Admin', 'Accountant']
+                'roles' => ['Super Admin', 'Accountant'],
             ],
             [
                 'name' => 'manage-roles-permissions',
                 'description' => 'Assign capabilities and define enterprise access roles',
                 'module' => 'Security & Audit',
-                'roles' => ['Super Admin']
-            ]
+                'roles' => ['Super Admin'],
+            ],
         ];
 
         return view('admin.roles.index', compact('roles', 'permissionMatrix'));

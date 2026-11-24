@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserStatus;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -51,12 +52,22 @@ class DatabaseSeeder extends Seeder
             ['email' => 'admin@apexerp.com'],
             [
                 'name' => 'Sarah Jenkins',
+                'phone' => '+1 (555) 019-2834',
+                'status' => UserStatus::ACTIVE,
                 'password' => bcrypt('password'),
                 'email_verified_at' => now(),
             ]
         );
 
         $admin->syncRoles([$adminRole]);
+
+        // 4. Seed Sample ERP Users with Roles and Statuses using User::factory()
+        if (User::count() <= 1) {
+            User::factory()->count(4)->withRole('Warehouse Manager')->create();
+            User::factory()->count(4)->withRole('Sales Executive')->create();
+            User::factory()->count(2)->inactive()->create();
+            User::factory()->count(1)->suspended()->create();
+        }
 
         // 4. Record Initial ERP Activity Log
         activity()

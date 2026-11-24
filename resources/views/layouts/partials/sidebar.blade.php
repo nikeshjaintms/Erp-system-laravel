@@ -31,12 +31,20 @@
         <div class="nav-section-title">Operations</div>
 
         <div class="nav-item">
-            <a href="{{ route('admin.inventory') }}" class="nav-link-item {{ request()->routeIs('admin.inventory*') ? 'active' : '' }}">
+            <a href="{{ route('admin.items.index') }}" class="nav-link-item {{ request()->routeIs('admin.items*') ? 'active' : '' }}">
                 <span class="nav-link-main">
                     <i class="bi bi-box-seam nav-icon"></i>
-                    <span class="nav-text">Inventory & Stock</span>
+                    <span class="nav-text">Item Master</span>
                 </span>
-                <span class="badge bg-warning-subtle text-warning border border-warning-subtle rounded-pill px-2 py-0.5 nav-badge" style="font-size: 0.65rem;">Low 3</span>
+            </a>
+        </div>
+
+        <div class="nav-item">
+            <a href="{{ route('admin.stock.index') }}" class="nav-link-item {{ request()->routeIs('admin.stock*') ? 'active' : '' }}">
+                <span class="nav-link-main">
+                    <i class="bi bi-boxes nav-icon"></i>
+                    <span class="nav-text">Stock Ledger</span>
+                </span>
             </a>
         </div>
 
@@ -125,6 +133,15 @@
 
         <!-- System Administration -->
         <div class="nav-section-title">Administration</div>
+
+        <div class="nav-item">
+            <a href="{{ route('admin.users') }}" class="nav-link-item {{ request()->routeIs('admin.users*') ? 'active' : '' }}">
+                <span class="nav-link-main">
+                    <i class="bi bi-people nav-icon"></i>
+                    <span class="nav-text">Users Management</span>
+                </span>
+            </a>
+        </div>
 
         <div class="nav-item">
             <a href="{{ route('admin.settings') }}" class="nav-link-item {{ request()->routeIs('admin.settings*') ? 'active' : '' }}">
